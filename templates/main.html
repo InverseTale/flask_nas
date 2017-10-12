@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+ 	</head>
+ 	<body>
+      {% for row in rows %}
+        <a href="{{url_for('anime_detail', title=row[1], anime_id=row[0])}}"><img src="images/{{row[2]}}" width=200px height=200px/></a><br/>
+        {{ row[1] }}<br/>
+      {% endfor %}
+ 	</body>
+</html>
