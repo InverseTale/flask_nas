@@ -20,8 +20,8 @@ def main():
 	return render_template('main.html', rows = rows)
 	conn.close()
 
-def upload_success():
-	return render_template('main.html')
+# def upload_success():
+# 	return render_template('main.html')
 
 @app.route('/detail/<title>/<int:anime_id>')
 def anime_detail(title, anime_id):
