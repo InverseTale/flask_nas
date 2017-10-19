@@ -1,9 +1,10 @@
-def change_vtt(file_name):
-	f = open('/Users/hyun/Documents/workspace/flask_nas/static/uploads/test10/'+filename)
+def change_vtt(insert_file_path):
+	print ('./static'+insert_file_path)
+	f = open('./static'+insert_file_path)
 	text = f.read()
 	f.close()
-
-	f = open('/Users/hyun/Documents/workspace/flask_nas/static/uploads/test10/'+filename, 'w')
+	print('is_vtt start???????')
+	f = open('./static'+insert_file_path, 'w')
 	f.write("WEBVTT\n\n")
 	f.write(text)
 	f.close()

@@ -108,14 +108,15 @@ class smiItem(object):
 		return s
 
 ###################################################################################################
-def convertSMI(smi_file):
-	if not os.path.exists('./static/uploads/test2/'+smi_file):
+def convertSMI(smi_file, file_name):
+	file_path = './static/uploads/' + file_name
+	if not os.path.exists(file_path):
 		sys.stderr.write('Cannot find smi file <%s>\n' % smi_file)
 		return False
 	rndx = smi_file.rfind('.')
 	srt_file = '%s.vtt' % smi_file[0:rndx]
 
-	ifp = open('./static/uploads/test2/'+smi_file)
+	ifp = open(file_path + '/' + smi_file)
 	smi_sgml = ifp.read()#.upper()
 	ifp.close()
 	chdt = chardet.detect(smi_sgml)
@@ -159,7 +160,7 @@ def convertSMI(smi_file):
 		else:
 			sync_cont += line
 			
-	ofp = open('./static/uploads/test2/'+srt_file, 'w')
+	ofp = open(file_path + '/' + srt_file, 'w')
 	ndx = 1
 	for si in srt_list:
 		si.convertSrt()
@@ -175,13 +176,19 @@ def convertSMI(smi_file):
 
 ###################################################################################################
 def doConvert():
-	if len(sys.argv) <= 1:
+	print len(sys.argv)
+	print ('argv[0] :' + sys.argv[0])
+	print ('argv[1] :' + sys.argv[1])
+	print ('argv[2] :' + sys.argv[2])
+	if len(sys.argv) <= 2:
 		usage()
-	for smi_file in sys.argv[1:]:
-		if convertSMI(smi_file):
-			print "Converting <%s> OK!" % smi_file
-		else:
-			print "Converting <%s> Failture!" % smi_file
+	# for smi_file in sys.argv[1:]:
+	file_name = sys.argv[1]
+	smi_file = sys.argv[2]
+	if convertSMI(smi_file, file_name):
+		print "Converting <%s> OK!" % smi_file
+	else:
+		print "Converting <%s> Failture!" % smi_file
 			
 	
 ###################################################################################################
