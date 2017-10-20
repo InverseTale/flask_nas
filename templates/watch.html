@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 	<head>
 		<meta charset="utf-8">
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="jquery.srt.js"></script>
+
  	</head>
  	<body>
- 	{{ anipath }}
- 	  <video width="400" controls>
+ 	{{anipath}}
+ 	  <video controls="controls" autoplay="autoplay">
  	  	<source src="{{anipath}}" type="video/mp4">
  	  	<source src="{{anipath}}" type="video/avi">
+ 	  	<track kind="subtitles" label="korean subtitles" src="/uploads/test30/oda1.vtt" srclang="ko" default></track>
  	  </video>
  	</body>
 </html>

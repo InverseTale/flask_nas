@@ -2,15 +2,23 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from werkzeug import secure_filename
 from config import *
+import subprocess, change_vtt, smi2srt
 import os
 app = Flask(__name__, static_url_path="", static_folder="static")
 
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
-app.config['ALLOWED_EXTENSTIONS'] = set(['mp4','avi'])
+app.config['ALLOWED_EXTENSTIONS'] = set(['mp4','avi','smi'])
 
 def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSTIONS']
+
+def is_track_extenstion(filename):
+	if '.smi' in filename:
+		smi_ok = 'ok'
+	else:
+		smi_ok = 'no'
+	return smi_ok
 
 @app.route('/')
 def main():
@@ -64,10 +72,26 @@ def upload():
 		for index, file in enumerate(uploaded_files):
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
+					
 				if not os.path.exists(app.config['UPLOAD_FOLDER'] + title):
 					os.makedirs(app.config['UPLOAD_FOLDER'] + title)
 				insert_file_path = '/uploads/'+title+'/'+filename
+				print filename
+				print is_track_extenstion(filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'] + title, filename))
+				if is_track_extenstion(filename) == 'ok':
+					run_subprocess = 'python smi2srt.py '+ title + ' ' + filename
+					print run_subprocess
+					subprocess.call(['python smi2srt.py '+ title + ' ' + filename], shell=True)
+					if '.smi' in filename:
+						filename = filename.split('.')
+						new_filename = filename[0]+'.vtt'
+						insert_file_path = '/uploads/'+title+'/'+new_filename
+						change_vtt.change_vtt(insert_file_path)
+					else: 
+						pass
+					
+					print("convert to smi file success!")
 				curs.execute(detail_sql,(title))
 				row = curs.fetchall()
 				curs.execute(insert_detail_sql, (row[0][0], index+1, insert_file_path, 1))
@@ -82,4 +106,4 @@ def upload():
 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True, threaded=True)
