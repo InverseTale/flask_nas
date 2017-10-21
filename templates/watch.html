@@ -6,11 +6,12 @@
 
  	</head>
  	<body>
- 	{{anipath}}
+ 	{{anipath}}</br>
+ 	{{subtitle_path}}
  	  <video controls="controls" autoplay="autoplay">
  	  	<source src="{{anipath}}" type="video/mp4">
  	  	<source src="{{anipath}}" type="video/avi">
- 	  	<track kind="subtitles" label="korean subtitles" src="/uploads/test30/oda1.vtt" srclang="ko" default></track>
+ 	  	<track kind="subtitles" label="korean subtitles" src="{{subtitle_path}}" srclang="ko" default></track>
  	  </video>
  	</body>
 </html>
