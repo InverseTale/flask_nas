@@ -70,7 +70,7 @@ def upload():
 		imgname = secure_filename(image.filename)
 
 		image.save('static/images/'+imgname)
-		print imgname
+		print 'save imagename :' + imgname
 		#insert db from anime
 		curs = conn.cursor()
 		curs.execute(main_sql, (title, imgname))
@@ -83,13 +83,12 @@ def upload():
 				if not os.path.exists(app.config['UPLOAD_FOLDER'] + title):
 					os.makedirs(app.config['UPLOAD_FOLDER'] + title)
 				insert_file_path = '/uploads/'+title+'/'+filename
-				print filename
-				print is_track_extenstion(filename)
+				print 'check extention .smi file' + is_track_extenstion(filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'] + title, filename))
 				if is_track_extenstion(filename) == 'ok':
 					run_subprocess = 'python smi2srt.py '+ title + ' ' + filename
-					print run_subprocess
-					subprocess.call(['python smi2srt.py '+ title + ' ' + filename], shell=True)
+					print 'run_subprocess:' + run_subprocess
+					subprocess.call([run_subprocess], shell=True)
 					if '.smi' in filename:
 						filename = filename.split('.')
 						new_filename = filename[0] +'.vtt'
