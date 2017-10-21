@@ -35,7 +35,7 @@ def main():
 def anime_detail(title, anime_id):
 	print anime_id
 	curs = conn.cursor()
-	curs.execute(load_detail_sql, (anime_id))
+	curs.execute(load_detail_sql, (anime_id, '%.mp4'))
 	rows = curs.fetchall()
 	return render_template('detail.html', title = title, rows = rows)
 	conn.close()
@@ -44,9 +44,15 @@ def anime_detail(title, anime_id):
 def show_anime(title, anime_id, episode):
 	curs = conn.cursor()
 	curs.execute(select_anipath_sql, (anime_id, episode))
-	rows = curs.fetchall()
-	anipath = rows[0][3]
-	return render_template('watch.html', anipath=anipath)
+	anipath_rows = curs.fetchall()
+	anipath = anipath_rows[0][3]
+
+	subttile = anipath.split('.')
+	subtitle_path = subttile[0]+'.vtt'
+	print subtitle_path
+	
+	return render_template('watch.html', anipath = anipath, subtitle_path = subtitle_path)
+	conn.close()
 
 @app.route('/upload')
 def index():
@@ -56,6 +62,7 @@ def index():
 def upload():
 	uploaded_files = request.files.getlist("file[]")
 	filenames = []
+	episode = 0
 	if request.method == 'POST':
 		#get form data
 		title = request.form.get('title')
@@ -69,7 +76,7 @@ def upload():
 		curs.execute(main_sql, (title, imgname))
 		conn.commit()
 
-		for index, file in enumerate(uploaded_files):
+		for file in uploaded_files:
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
 					
@@ -85,18 +92,19 @@ def upload():
 					subprocess.call(['python smi2srt.py '+ title + ' ' + filename], shell=True)
 					if '.smi' in filename:
 						filename = filename.split('.')
-						new_filename = filename[0]+'.vtt'
+						new_filename = filename[0] +'.vtt'
 						insert_file_path = '/uploads/'+title+'/'+new_filename
 						change_vtt.change_vtt(insert_file_path)
+						print("convert to smi file success!")
 					else: 
 						pass
-					
-					print("convert to smi file success!")
-				curs.execute(detail_sql,(title))
-				row = curs.fetchall()
-				curs.execute(insert_detail_sql, (row[0][0], index+1, insert_file_path, 1))
-				conn.commit()
-				filenames.append(filename)
+				else:
+					episode+=1
+					curs.execute(detail_sql,(title))
+					row = curs.fetchall()
+					curs.execute(insert_detail_sql, (row[0][0], episode, insert_file_path, 1))
+					conn.commit()
+					filenames.append(filename)
 			else:
 				error_text = 'you can upload video extention'
 				return render_template('upload.html', error_text=error_text)
