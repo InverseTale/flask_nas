@@ -6,15 +6,16 @@
  	<body>
   		<div class="container">
    			<div class="header">
-    			<h3 class="text-muted">How To Upload a File.</h3>
+    			<h3 class="text-muted">파일 업로드</h3>
    			</div>
    			<hr/>
    			<div>
    				{{ error_text }}
    				<form action="/uploaded" method="post" enctype="multipart/form-data">
-            Title<input type="text" name="title"/><br/>
-            Image<input type="file" multiple="" name="image" class="span3" /><br/>
-   					Video(s)<input type="file" multiple="" name="file[]" class="span3" /><br/>
+            Title <input type="text" name="title"/><br/>
+            Folder Name <input type="text" name="folder_name"/><br/>
+            Image <input type="file" multiple="" name="image" class="span3" /><br/>
+   					Video(s) <input type="file" multiple="" name="file[]" class="span3" /><br/>
     				<input type="submit" value="Upload" class="span2"/>
    				</form>
    			</div>

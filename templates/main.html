@@ -4,7 +4,7 @@
  	</head>
  	<body>
       {% for row in rows %}
-        <a href="{{url_for('anime_detail', title=row[1], anime_id=row[0])}}"><img src="images/{{row[2]}}" width=200px height=200px/></a><br/>
+        <a href="{{url_for('anime_detail', folder_name=row[2], anime_id=row[0])}}"><img src="images/{{row[3]}}" width=200px height=200px/></a><br/>
         {{ row[1] }}<br/>
       {% endfor %}
  	</body>
