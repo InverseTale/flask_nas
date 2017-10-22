@@ -73,15 +73,21 @@ def upload():
 		print 'save imagename :' + img_name
 		#insert db from anime
 		curs = conn.cursor()
-		curs.execute(main_sql, (title, folder_name, img_name))
-		conn.commit()
+		curs.execute(search_anime_sql, folder_name)
+		anime_row = curs.fetchall()
+		if anime_row:
+			pass
+		else:
+			curs.execute(main_sql, (title, folder_name, img_name))
+			conn.commit()
+
+		if not os.path.exists(app.config['UPLOAD_FOLDER'] + folder_name):
+			os.makedirs(app.config['UPLOAD_FOLDER'] + folder_name)
 
 		for file in uploaded_files:
 			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)
-					
-				if not os.path.exists(app.config['UPLOAD_FOLDER'] + folder_name):
-					os.makedirs(app.config['UPLOAD_FOLDER'] + folder_name)
+				filename = secure_filename(file.filename)		
+
 				insert_file_path = '/uploads/'+folder_name+'/'+filename
 				print 'check extention .smi file : ' + is_track_extenstion(filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'] + folder_name, filename))
@@ -98,8 +104,18 @@ def upload():
 					else: 
 						pass
 				else:
-					episode+=1
-					curs.execute(detail_sql,(folder_name))
+					print '%'+folder_name+'%'
+					curs.execute(check_detail_sql,('%'+folder_name+'%'))
+					episode_row = curs.fetchall()
+					print check_detail_sql + '%'+folder_name+'%'
+					if episode_row:
+						print 'have_episode'
+						episode_row
+						episode = episode_row[0][1] + 1
+					else:
+						episode+=1
+						print 'did not have_episode'
+					curs.execute(detail_sql, (folder_name))
 					row = curs.fetchall()
 					curs.execute(insert_detail_sql, (row[0][0], episode, insert_file_path, 1))
 					conn.commit()
