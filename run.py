@@ -9,6 +9,19 @@ app = Flask(__name__, static_url_path="", static_folder="static")
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 app.config['ALLOWED_EXTENSTIONS'] = set(['mp4','avi','smi'])
 
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
+
 def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSTIONS']
@@ -31,27 +44,22 @@ def main():
 # def upload_success():
 # 	return render_template('main.html')
 
-@app.route('/detail/<folder_name>/<int:anime_id>')
-def anime_detail(folder_name, anime_id):
+@app.route('/detail/<title>/<int:anime_id>')
+def anime_detail(title, anime_id):
+	print anime_id
 	curs = conn.cursor()
 	curs.execute(load_detail_sql, (anime_id))
 	rows = curs.fetchall()
-	return render_template('detail.html', folder_name = folder_name, rows = rows)
+	return render_template('detail.html', title = title, rows = rows)
 	conn.close()
 
-@app.route('/detail/<folder_name>/<int:anime_id>/<int:episode>')
-def show_anime(folder_name, anime_id, episode):
+@app.route('/detail/<title>/<int:anime_id>/<int:episode>')
+def show_anime(title, anime_id, episode):
 	curs = conn.cursor()
 	curs.execute(select_anipath_sql, (anime_id, episode))
-	anipath_rows = curs.fetchall()
-	anipath = anipath_rows[0][3]
-
-	subttile = anipath.split('.')
-	subtitle_path = subttile[0]+'.vtt'
-	print subtitle_path
-	
-	return render_template('watch.html', anipath = anipath, subtitle_path = subtitle_path)
-	conn.close()
+	rows = curs.fetchall()
+	anipath = rows[0][3]
+	return render_template('watch.html', anipath=anipath)
 
 @app.route('/upload')
 def index():
@@ -61,65 +69,47 @@ def index():
 def upload():
 	uploaded_files = request.files.getlist("file[]")
 	filenames = []
-	episode = 0
 	if request.method == 'POST':
 		#get form data
 		title = request.form.get('title')
-		folder_name = request.form.get('folder_name')
 		image = request.files['image']
-		img_name = secure_filename(image.filename)
+		imgname = secure_filename(image.filename)
 
-		image.save('static/images/'+img_name)
-		print 'save imagename :' + img_name
+		image.save('static/images/'+imgname)
+		print imgname
 		#insert db from anime
 		curs = conn.cursor()
-		curs.execute(search_anime_sql, folder_name)
-		anime_row = curs.fetchall()
-		if anime_row:
-			pass
-		else:
-			curs.execute(main_sql, (title, folder_name, img_name))
-			conn.commit()
+		curs.execute(main_sql, (title, imgname))
+		conn.commit()
 
-		if not os.path.exists(app.config['UPLOAD_FOLDER'] + folder_name):
-			os.makedirs(app.config['UPLOAD_FOLDER'] + folder_name)
-
-		for file in uploaded_files:
+		for index, file in enumerate(uploaded_files):
 			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)		
-
-				insert_file_path = '/uploads/'+folder_name+'/'+filename
-				print 'check extention .smi file : ' + is_track_extenstion(filename)
-				file.save(os.path.join(app.config['UPLOAD_FOLDER'] + folder_name, filename))
+				filename = secure_filename(file.filename)
+					
+				if not os.path.exists(app.config['UPLOAD_FOLDER'] + title):
+					os.makedirs(app.config['UPLOAD_FOLDER'] + title)
+				insert_file_path = '/uploads/'+title+'/'+filename
+				print filename
+				print is_track_extenstion(filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER'] + title, filename))
 				if is_track_extenstion(filename) == 'ok':
-					run_subprocess = 'python smi2srt.py '+ folder_name + ' ' + filename
-					print 'run_subprocess:' + run_subprocess
-					subprocess.call([run_subprocess], shell=True)
+					run_subprocess = 'python smi2srt.py '+ title + ' ' + filename
+					print run_subprocess
+					subprocess.call(['python smi2srt.py '+ title + ' ' + filename], shell=True)
 					if '.smi' in filename:
 						filename = filename.split('.')
-						new_filename = filename[0] +'.vtt'
-						insert_file_path = '/uploads/'+folder_name+'/'+new_filename
+						new_filename = filename[0]+'.vtt'
+						insert_file_path = '/uploads/'+title+'/'+new_filename
 						change_vtt.change_vtt(insert_file_path)
-						print("convert to smi file success!")
 					else: 
 						pass
-				else:
-					print '%'+folder_name+'%'
-					curs.execute(check_detail_sql,('%'+folder_name+'%'))
-					episode_row = curs.fetchall()
-					print check_detail_sql + '%'+folder_name+'%'
-					if episode_row:
-						print 'have_episode'
-						episode_row
-						episode = episode_row[0][1] + 1
-					else:
-						episode+=1
-						print 'did not have_episode'
-					curs.execute(detail_sql, (folder_name))
-					row = curs.fetchall()
-					curs.execute(insert_detail_sql, (row[0][0], episode, insert_file_path, 1))
-					conn.commit()
-					filenames.append(filename)
+					
+					print("convert to smi file success!")
+				curs.execute(detail_sql,(title))
+				row = curs.fetchall()
+				curs.execute(insert_detail_sql, (row[0][0], index+1, insert_file_path, 1))
+				conn.commit()
+				filenames.append(filename)
 			else:
 				error_text = 'you can upload video extention'
 				return render_template('upload.html', error_text=error_text)
@@ -129,4 +119,4 @@ def upload():
 
 
 if __name__ == '__main__':
-	app.run(debug=True, threaded=True)
+	app.run(debug=True)

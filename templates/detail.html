@@ -4,7 +4,7 @@
  	</head>
  	<body>
  	  {% for row in rows %}
- 	  	<a href="{{url_for('show_anime', folder_name=folder_name, anime_id=row[1], episode=row[2], ani_path=row[3] )}}">{{ row[2] }}화</a><br/>
+ 	  	<a href="{{url_for('show_anime', title=title, anime_id=row[1], episode=row[2], ani_path=row[3] )}}">{{ row[2] }}화</a><br/>
  	  {% endfor %}
  	</body>
 </html>
