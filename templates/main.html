@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 	<head>
 		<meta charset="utf-8">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
  	</head>
  	<body>
-      {% for row in rows %}
-        <a href="{{url_for('anime_detail', folder_name=row[2], anime_id=row[0])}}"><img src="images/{{row[3]}}" width=200px height=200px/></a><br/>
-        {{ row[1] }}<br/>
-      {% endfor %}
+ 		<div class="container">
+			<ul id="slide-out" class="side-nav fixed">
+				<li>
+					<div class="user-view">
+						<div class="background">
+							<img src="images/to.png">
+						</div>
+					</div>
+				</li>
+    			<!-- search bar -->
+    			<div class="nav-wrapper">
+      				<form>
+        				<div class="input-field">
+          					<input id="search" type="search" required>
+          					<label class="label-icon" for="search"><i class="material-icons">search</i></label>
+          					<i class="material-icons">close</i>
+        				</div>
+      				</form>
+    			</div>
+    			<li><div class="divider"></div></li>    			
+				<li><a href="#!">MonDay</a></li>
+				<li><a href="#!">Tuesday</a></li>
+				<li><a href="#!">Wednesday</a></li>
+				<li><a href="#!">Thursday</a></li>
+				<li><a href="#!">Friday</a></li>
+				<li><a href="#!">Saturday</a></li>
+				<li><a href="#!">Sunday</a></li>
+			</ul>
+		<a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>	
+      
+  		<div class="row">
+  			{% for row in rows %}
+  			      	<!-- <a class="a" href="{{url_for('anime_detail', title=row[1], anime_id=row[0])}}"><img src="images/{{row[2]}}" width=200px height=200px/></a><br/><h3>{{ row[1] }}</h3><br/> -->	
+	  			<div class="col s3 offset-s1">
+	    			<div class="post-module">
+	      				<!-- Thumbnail-->
+	      				<div class="thumbnail">
+	        				<div class="date">
+	          					<div class="day">Mon</div>        
+	        				</div>
+	        				<a class="a" href="{{url_for('anime_detail', title=row[1], anime_id=row[0])}}"><img src="images/{{row[2]}}"height=200px/></a>
+	      				</div>
+	      				<!-- Post Content-->
+	      				<div class="post-content">
+	        				<h3 class="title">{{row[1]}}</h3>
+	      				</div>
+	    			</div>
+	  			</div>
+	  		{% endfor %}
+	 	</div>
+	 	</div>
  	</body>
 </html>
