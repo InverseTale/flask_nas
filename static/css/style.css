@@ -116,9 +116,25 @@ body {
   box-sizing: border-box;
   float: left;
 }
+.container .row {
+  margin-left: 2rem;
+  margin-right: -5rem;
+}
 .container .info {
   width: 300px;
   margin: 50px auto;
   text-align: center;
 }
+@media (max-width: 1200px) {
+  .container .row {
+    margin-left: 10rem;
+    margin-right: 5rem;
+  }
+}
 
+@media (max-width: 1000px) {
+  .container .row {
+    margin-left: 10rem;
+    margin-right: 5rem;
+  }
+}
