@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<ul id="slide-out" class="side-nav fixed">
+    <li>
+        <div class="user-view">
+            <div class="background">
+                <img src="/images/to.png">
+            </div>
+        </div>
+    </li>
+    <!-- search bar -->
+    <div class="nav-wrapper">
+        <form>
+            <div class="input-field">
+                <input id="search" type="search" required>
+                <label class="label-icon" for="search">
+                    <i class="material-icons">search</i>
+                </label>
+                <i class="material-icons">close</i>
+            </div>
+        </form>
+    </div>
+    <li><div class="divider"></div></li>
+    <li><a href="#!">MonDay</a></li>
+    <li><a href="#!">Tuesday</a></li>
+    <li><a href="#!">Wednesday</a></li>
+    <li><a href="#!">Thursday</a></li>
+    <li><a href="#!">Friday</a></li>
+    <li><a href="#!">Saturday</a></li>
+    <li><a href="#!">Sunday</a></li>
+</ul>
+<a href="#" data-activates="slide-out" class="button-collapse">
+    <i class="material-icons">menu</i>
+</a>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<script>
+    $(".button-collapse").sideNav();
+</script>
+</body>
+</html>

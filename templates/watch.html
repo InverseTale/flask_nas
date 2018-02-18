@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-	<head>
-		<meta charset="utf-8">
-		<script type="text/javascript" src="jquery.js"></script>
-		<script type="text/javascript" src="jquery.srt.js"></script>
-
- 	</head>
- 	<body>
- 	  <video controls="controls" autoplay="autoplay">
- 	  	<source src="{{anipath}}" type="video/mp4">
- 	  	<source src="{{anipath}}" type="video/avi">
- 	  	<track kind="subtitles" label="korean subtitles" src="{{subtitle_path}}" srclang="ko" default></track>
- 	  </video>
- 	</body>
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="jquery.srt.js"></script>
+</head>
+<body>
+<video controls autoplay="autoplay">
+    <source src="{{ anipath }}" type="video/mp4">
+    <source src="{{ anipath }}" type="video/avi">
+    {% if subtitle_path %}
+        <track kind="subtitles" label="korean subtitles"
+               src="{{ subtitle_path }}" srclang="ko" default>
+    {% endif %}
+</video>
+</body>
 </html>

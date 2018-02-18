@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 	<head>
 		<meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
  	</head>
  	<body>
- 	  {% for row in rows %}
- 	  	<a href="{{url_for('show_anime', title=title, anime_id=row[1], episode=row[2], ani_path=row[3] )}}">{{ row[2] }}화</a><br/>
- 	  {% endfor %}
+      {% include "nav.html" %}
+      <div class="container">
+        <div class="collection">
+            <h4>{{ title }}</h4>
+            {% for row in rows %}
+                <a class="collection-item" href="{{url_for('show_anime', anime_id=row[1], episode=row[2], ani_path=row[3] )}}">{{ row[2] }}화</a>
+            {% endfor %}
+        </div>
+      </div>
  	</body>
 </html>
