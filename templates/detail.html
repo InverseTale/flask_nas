@@ -7,7 +7,9 @@
       {% include "nav.html" %}
       <div class="container">
         <div class="collection">
-            <h4>{{ title }}</h4>
+            <h4
+
+            >{{ title }}</h4>
             {% for row in rows %}
                 <a class="collection-item" href="{{url_for('show_anime', anime_id=row[1], episode=row[2], ani_path=row[3] )}}">{{ row[2] }}화</a>
             {% endfor %}
