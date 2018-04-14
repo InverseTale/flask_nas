@@ -29,12 +29,13 @@ class ANI_DB(object):
 
     def get_sql(self, sql):
         return {
-            'insert_anime_sql': "insert into anime(title, folder_name, anime_image) values(%s, %s, %s)",
-            'insert_detail_sql': "insert into anime_detail(anime_id, episode, file, end_yn) values(%s, %s, %s ,%s)",
+            'insert_anime_sql': "insert into anime(title, folder_name, anime_image, anime_days) values(%s, %s, %s, %s)",
+            'insert_detail_sql': "insert into anime_detail(anime_id, episode, file) values(%s, %s, %s)",
             'insert_file_vtt': "update  anime_detail set file_vtt = %s where anime_id = %s and episode = %s",
             'select_all_sql': "select * from anime",
             'select_detail_sql': "select * from anime_detail where anime_id = %s",
             'select_anipath_sql': "select * from anime_detail where anime_id = %s and episode = %s",
-            'select_anime_sql': "select * from anime where title = %s",#detail_sql
+            'select_anime_sql': "select * from anime where title = %s",
+            'select_day_sql': "select * from anime where anime_days = %s ",
             'get_episode': "select max(episode) from anime_detail where anime_id = %s"
         }.get(sql, None)

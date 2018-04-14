@@ -3,8 +3,7 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 
-from flask import Flask, render_template, request, url_for, \
-    g
+from flask import Flask, render_template, request, url_for, g
 from werkzeug.utils import secure_filename
 
 import change_vtt
@@ -49,10 +48,10 @@ def is_track_extenstion(filename):
     return '.smi' in filename
 
 
-def create_new_anime(row, title, folder, imgname):
+def create_new_anime(row, title, folder, img_name, anime_day):
     # insert db from anime
     sql = g.db.get_sql('insert_anime_sql')
-    g.db.execute(sql, title, folder, imgname)
+    g.db.execute(sql, title, folder, img_name, anime_day)
     g.db.commit()
 
 
@@ -64,9 +63,23 @@ def main():
     for row in rows:
         now = datetime.now().replace(hour=0, minute=0, second=0)
         row = list(row)
-        if row[4] >= now - timedelta(days=1):
+        if row[5] >= now - timedelta(days=1):
             row.append(True)
         result.append(row)
+    return render_template('main.html', rows=result)
+
+@app.route('/<int:anime_days>')
+def anime_days(anime_days):
+    sql = g.db.get_sql('select_day_sql')
+    rows = g.db.execute(sql, anime_days)
+    result = []
+    for row in rows:
+        now = datetime.now().replace(hour=0, minute=0, second=0)
+        row = list(row)
+        if row[5] >= now - timedelta(days=1):
+            row.append(True)
+        result.append(row)
+
     return render_template('main.html', rows=result)
 
 
@@ -103,11 +116,12 @@ def upload():
     title = request.form.get('title')
     folder = request.form.get('folder_name')
     image = request.files['image']
-    imgname = (image.filename)
+    anime_day = request.form.get('anime_day')
 
+    img_name = (image.filename)
     image.save('{}/static/images/{}'.format(
         app.config['BASE_DIR'],
-        imgname
+        img_name
     ))
 
     sql = g.db.get_sql('select_anime_sql')
@@ -115,7 +129,7 @@ def upload():
 
     # create new anime
     if not row:
-        create_new_anime(row, title, folder, imgname)
+        create_new_anime(row, title, folder, img_name, anime_day)
 
     # checking all upload files
     for index, file in enumerate(uploaded_files):
@@ -166,12 +180,10 @@ def upload():
                     g.db.commit()
 
             else:
-                print(episode)
-                get_episode = episode[0][0] + 1 if episode and episode[0] else 1
+                get_episode = episode[0][0] + 1 if episode[0][0] else 1
 
                 sql = g.db.get_sql('insert_detail_sql')
-                g.db.execute(sql, anime_idx, get_episode, insert_file_path,
-                             1)
+                g.db.execute(sql, anime_idx, get_episode, insert_file_path)
                 g.db.commit()
 
             filenames.append(filename)

@@ -1,24 +1,37 @@
 <!DOCTYPE html>
-	<head>
-		<meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 	</head>
- 	<body>
-  		<div class="container">
-   			<div class="header">
-    			<h3 class="text-muted">파일 업로드</h3>
-   			</div>
-   			<hr/>
-   			<div>
-   				{{ error_text }}
-   				<form action="/uploaded" method="post" enctype="multipart/form-data">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h3 class="text-muted">파일 업로드</h3>
+    </div>
+    <hr/>
+    <div>
+        {{ error_text }}
+        <form action="/uploaded" method="post" enctype="multipart/form-data">
             Title <input type="text" name="title"/><br/>
             Folder Name <input type="text" name="folder_name"/><br/>
-            Image <input type="file" multiple="" name="image" class="span3" /><br/>
-   					Video(s) <input type="file" multiple="" name="file[]" class="span3" /><br/>
-    				<input type="submit" value="Upload" class="span2"/>
-   				</form>
-   			</div>
-  		</div>
- 	</body>
+            Image <input type="file" multiple="" name="image"
+                         class="span3"/><br/>
+            Video(s) <input type="file" multiple="" name="file[]"
+                            class="span3"/><br/>
+            select day
+            <select name="anime_day">
+                <option value="0">월</option>
+                <option value="1">화</option>
+                <option value="2">수</option>
+                <option value="3">목</option>
+                <option value="4">금</option>
+                <option value="5">토</option>
+                <option value="6">일</option>
+                <option value="9">완결</option>
+            </select><br/>
+            <input type="submit" value="Upload" class="span2"/>
+        </form>
+    </div>
+</div>
+</body>
 </html>
