@@ -103,9 +103,12 @@ def upload():
     title = request.form.get('title')
     folder = request.form.get('folder_name')
     image = request.files['image']
-    imgname = secure_filename(image.filename)
+    imgname = (image.filename)
 
-    image.save('/home/ubuntu/flask_nas/static/images/' + imgname)
+    image.save('{}/static/images/{}'.format(
+        app.config['BASE_DIR'],
+        imgname
+    ))
 
     sql = g.db.get_sql('select_anime_sql')
     row = g.db.execute(sql, title)
@@ -163,7 +166,8 @@ def upload():
                     g.db.commit()
 
             else:
-                get_episode = episode[0][0] + 1 if episode else 1
+                print(episode)
+                get_episode = episode[0][0] + 1 if episode and episode[0] else 1
 
                 sql = g.db.get_sql('insert_detail_sql')
                 g.db.execute(sql, anime_idx, get_episode, insert_file_path,
