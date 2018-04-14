@@ -50,11 +50,10 @@ def is_track_extenstion(filename):
 
 
 def create_new_anime(row, title, folder, imgname):
-    if not row:
-        # insert db from anime
-        sql = g.db.get_sql('insert_anime_sql')
-        g.db.execute(sql, title, folder, imgname)
-        g.db.commit()
+    # insert db from anime
+    sql = g.db.get_sql('insert_anime_sql')
+    g.db.execute(sql, title, folder, imgname)
+    g.db.commit()
 
 
 @app.route('/')
@@ -111,10 +110,11 @@ def upload():
     sql = g.db.get_sql('select_anime_sql')
     row = g.db.execute(sql, title)
 
-    #create new anime
-    create_new_anime(row, title, folder, imgname)
+    # create new anime
+    if not row:
+        create_new_anime(row, title, folder, imgname)
 
-    #checking all upload files
+    # checking all upload files
     for index, file in enumerate(uploaded_files):
         sql = g.db.get_sql('detail_sql')
         row = g.db.execute(sql, title)
@@ -122,11 +122,11 @@ def upload():
 
         anime_idx = row[0][0]
 
-        #check extenstions
+        # check extenstions
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
 
-            #create new folder
+            # create new folder
             if not os.path.exists(app.config['UPLOAD_FOLDER'] + folder):
                 os.makedirs(app.config['UPLOAD_FOLDER'] + folder)
 
@@ -136,7 +136,6 @@ def upload():
 
             sql = g.db.get_sql('get_episode')
             episode = g.db.execute(sql, anime_idx)
-            episode_idx = episode[0][0]
 
             if is_track_extenstion(filename):
                 run_subprocess = 'python smi2srt.py ' + folder + ' ' + filename
@@ -147,8 +146,11 @@ def upload():
                 if '.smi' in filename:
                     filename = filename.split('.')
                     new_filename = filename[0] + '.vtt'
-                    insert_file_path = app.config[
-                                           'UPLOAD_FOLDER'] + folder + '/' + new_filename
+                    insert_file_path = '{}{}/{}'.format(
+                        app.config['UPLOAD_FOLDER'],
+                        folder,
+                        new_filename
+                    )
                     change_vtt.change_vtt(insert_file_path)
                     sql = g.db.get_sql('select_anipath_sql')
                     vtt = g.db.execute(sql, anime_idx, get_episode)
@@ -161,16 +163,12 @@ def upload():
                     g.db.commit()
 
             else:
-                if episode_idx is None:
-                    get_episode = 1
-                else:
-                    get_episode = episode_idx + 1
+                get_episode = episode[0][0] + 1 if episode else 1
 
                 sql = g.db.get_sql('insert_detail_sql')
                 g.db.execute(sql, anime_idx, get_episode, insert_file_path,
                              1)
                 g.db.commit()
-
 
             filenames.append(filename)
         else:
