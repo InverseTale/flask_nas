@@ -8,9 +8,9 @@
 <video controls autoplay="autoplay">
     <source src="{{ anipath }}" type="video/mp4">
     <source src="{{ anipath }}" type="video/avi">
-    {% if subtitle_path %}
+    {% if vttpath %}
         <track kind="subtitles" label="korean subtitles"
-               src="{{ subtitle_path }}" srclang="ko" default>
+               src="{{ vttpath }}" srclang="ko" default>
     {% endif %}
 </video>
 </body>

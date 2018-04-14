@@ -1,6 +1,10 @@
 import pymysql
 from flask import current_app
 
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 class ANI_DB(object):
     def __init__(self):
         self.conn = pymysql.connect(
@@ -30,5 +34,7 @@ class ANI_DB(object):
             'load_detail_sql': "select * from anime_detail where anime_id = %s",
             'select_anipath_sql': "select * from anime_detail where anime_id = %s and episode = %s",
             'detail_sql': "select * from anime where title = %s",
-            'insert_detail_sql': "insert into anime_detail(anime_id, episode, file, end_yn) values(%s, %s, %s ,%s)"
+            'insert_detail_sql': "insert into anime_detail(anime_id, episode, file, end_yn) values(%s, %s, %s ,%s)",
+            'insert_file_vtt': "update  anime_detail set file_vtt = %s where anime_id = %s and episode = %s",
+            'get_episode' : "select max(episode) from anime_detail where anime_id = %s"
         }.get(sql, None)

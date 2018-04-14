@@ -79,10 +79,10 @@ def anime_detail(title,anime_id):
 @app.route('/detail/<int:anime_id>/<int:episode>')
 def show_anime(anime_id, episode):
     sql = g.db.get_sql('select_anipath_sql')
-    print sql
     rows = g.db.execute(sql, anime_id, episode)
     anipath = rows[0][3]
-    return render_template('watch.html', anipath=anipath)
+    vttpath = rows[0][4]
+    return render_template('watch.html', anipath=anipath, vttpath=vttpath)
 
 
 @app.route('/upload')
@@ -95,52 +95,83 @@ def upload():
     uploaded_files = request.files.getlist("file[]")
     filenames = []
     if request.method == 'POST':
-        # get form data
+        # get form dfolder_nameata
         title = request.form.get('title')
         folder = request.form.get('folder_name')
         image = request.files['image']
         imgname = secure_filename(image.filename)
 
-        image.save('static/images/' + imgname)
-        print imgname
-        # insert db from anime
-        sql = g.db.get_sql('main_sql')
-        g.db.execute(sql, title, folder, imgname)
-        g.db.commit()
+        image.save('/home/ubuntu/flask_nas/static/images/' + imgname)
+
+        sql = g.db.get_sql('detail_sql')
+        row = g.db.execute(sql, title)
+
+        if not row:
+            # insert db from anime
+            sql = g.db.get_sql('main_sql')
+            g.db.execute(sql, title, folder, imgname)
+            g.db.commit()
+            print 'insert anime ok!'
 
         for index, file in enumerate(uploaded_files):
+            sql = g.db.get_sql('detail_sql')
+            row = g.db.execute(sql, title)
+            g.db.commit()
+            print 'row is :'
+            print row
+            print row[0][0]
+
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
 
-                if not os.path.exists(app.config['UPLOAD_FOLDER'] + title):
-                    os.makedirs(app.config['UPLOAD_FOLDER'] + title)
-                insert_file_path = '/uploads/' + title + '/' + filename
-                print filename
-                print is_track_extenstion(filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'] + title,
+                if not os.path.exists(app.config['UPLOAD_FOLDER'] + folder):
+                    os.makedirs(app.config['UPLOAD_FOLDER'] + folder)
+                insert_file_path = '/uploads/' + folder + '/' + filename
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'] + folder,
                                        filename))
-                if is_track_extenstion(filename) == 'ok':
-                    run_subprocess = 'python smi2srt.py ' + title + ' ' + filename
-                    print run_subprocess
+
+                sql = g.db.get_sql('get_episode')
+                episode = g.db.execute(sql, row[0][0])
+
+                print episode[0][0]
+
+                if is_track_extenstion(filename) == 'no':
+                    if episode[0][0] is None:
+                        get_episode = 1
+                        print 'new row'
+                        print get_episode
+                    else:
+                        print 'not new row'
+                        get_episode = episode[0][0] + 1
+                        print get_episode
+                    sql = g.db.get_sql('insert_detail_sql')
+                    g.db.execute(sql, row[0][0], get_episode, insert_file_path, 1)
+                    g.db.commit()
+                    print 'insert detail sql success!'
+                elif is_track_extenstion(filename) == 'ok':
+                    run_subprocess = 'python smi2srt.py ' + folder + ' ' + filename
                     subprocess.call(
-                        ['python smi2srt.py ' + title + ' ' + filename],
+                        ['python smi2srt.py ' + folder + ' ' + filename],
                         shell=True)
                     if '.smi' in filename:
                         filename = filename.split('.')
                         new_filename = filename[0] + '.vtt'
-                        insert_file_path = '/uploads/' + title + '/' + new_filename
+                        insert_file_path = app.config['UPLOAD_FOLDER'] + folder + '/' + new_filename
                         change_vtt.change_vtt(insert_file_path)
+
+                        print  row[0][0]
+                        print get_episode
+                        sql = g.db.get_sql('select_anipath_sql')
+                        vtt = g.db.execute(sql, row[0][0], get_episode)
+                        print 'is vtt: '
+                        print vtt
+                        sql= g.db.get_sql('insert_file_vtt')
+                        g.db.execute(sql, '/uploads/' + folder + '/' + new_filename, vtt[0][1], get_episode)
+                        g.db.commit()
+
                     else:
                         pass
 
-                    print("convert to smi file success!")
-                sql = g.db.get_sql('detail_sql')
-                print 'detail_sql :' + sql
-                row = g.db.execute(sql, title)
-
-                sql = g.db.get_sql('insert_detail_sql')
-                g.db.execute(sql, row[0][0], index + 1, insert_file_path, 1)
-                g.db.commit()
                 filenames.append(filename)
             else:
                 error_text = 'you can upload video extention'
@@ -149,4 +180,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
