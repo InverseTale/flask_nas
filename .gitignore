@@ -21,3 +21,6 @@ htmlcov
 *,cover
 static/uploads
 static/images
+
+venv/
+runserver.err
