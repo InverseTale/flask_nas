@@ -116,7 +116,7 @@ def upload():
 
     # checking all upload files
     for index, file in enumerate(uploaded_files):
-        sql = g.db.get_sql('detail_sql')
+        sql = g.db.get_sql('select_anime_sql')
         row = g.db.execute(sql, title)
         g.db.commit()
 
