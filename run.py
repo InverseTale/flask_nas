@@ -97,9 +97,14 @@ def anime_detail(title, anime_id):
 def show_anime(anime_id, episode):
     sql = g.db.get_sql('select_anipath_sql')
     rows = g.db.execute(sql, anime_id, episode)
-    anipath = rows[0][3]
-    vttpath = rows[0][4]
-    return render_template('watch.html', anipath=anipath, vttpath=vttpath)
+    sql = g.db.get_sql('get_episode')
+    episode_rows = g.db.execute(sql, anime_id)
+
+    all_episode = episode_rows[0][0]
+    next_episode = rows[0][2] + 1
+    ani_path = rows[0][3]
+    vtt_path = rows[0][4]
+    return render_template('watch.html', next_episode=next_episode, all_episode=all_episode, ani_path=ani_path, vtt_path=vtt_path)
 
 
 @app.route('/upload')
