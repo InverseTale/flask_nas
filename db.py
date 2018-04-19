@@ -37,5 +37,6 @@ class ANI_DB(object):
             'select_anipath_sql': "select * from anime_detail where anime_id = %s and episode = %s",
             'select_anime_sql': "select * from anime where title = %s",
             'select_day_sql': "select * from anime where anime_days = %s ",
-            'get_episode': "select max(episode) from anime_detail where anime_id = %s"
+            'get_episode': "select max(episode) from anime_detail where anime_id = %s",
+            'get_title': "select title from anime where id = %s"
         }.get(sql, None)

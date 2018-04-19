@@ -86,15 +86,18 @@ def anime_days(anime_days):
 # def upload_success():
 # 	return render_template('main.html')
 
-@app.route('/detail/<title>/<int:anime_id>')
-def anime_detail(title, anime_id):
+@app.route('/detail/<int:anime_id>')
+def anime_detail(anime_id):
     sql = g.db.get_sql('select_detail_sql')
     rows = g.db.execute(sql, anime_id)
+    sql = g.db.get_sql('get_title')
+    get_title = g.db.execute(sql, anime_id)
+    title = get_title[0][0]
     return render_template('detail.html', rows=rows, title=title)
 
 
-@app.route('/detail/<title>/<int:anime_id>/<int:episode>')
-def show_anime(title, anime_id, episode):
+@app.route('/detail/<int:anime_id>/<int:episode>')
+def show_anime(anime_id, episode):
     sql = g.db.get_sql('select_anipath_sql')
     rows = g.db.execute(sql, anime_id, episode)
     sql = g.db.get_sql('get_episode')

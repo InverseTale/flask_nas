@@ -21,7 +21,7 @@
                                     <div class="day">N</div>
                                 </div>
                             {% endif %}
-                            <a href="{{ url_for('anime_detail', title=row[1], anime_id=row[0]) }}">
+                            <a href="{{ url_for('anime_detail', anime_id=row[0]) }}">
                                 <img src="images/{{ row[3] }}" height=200px/> {{ row[2] }}
                             </a>
                         </div>
