@@ -6,13 +6,18 @@
         var link = document.location.href.split('?');
         var split_link = link[0].split("/");
 
-
         function next_page() {
             var next_episode;
 
             next_episode = split_link.pop();
             next_episode = parseInt(next_episode) + 1;
             split_link.push(next_episode.toString());
+            split_link = split_link.join('/');
+            window.location = split_link;
+        }
+
+        function detail_page() {
+            split_link.pop();
             split_link = split_link.join('/');
             window.location = split_link;
         }
@@ -40,8 +45,9 @@
     {% endif %}
 </video>
 {% if next_episode-1 > 1 %}
-<input type="button" value="이전" onClick="prev_page();"></br></br>
+<input type="button" value="이전" onClick="prev_page();">&nbsp;&nbsp;&nbsp;
 {% endif %}
+<input type="button" value="목록" onClick="detail_page();">&nbsp;&nbsp;&nbsp;
 {% if all_episode >= next_episode %}
 <input type="button" value="다음" onClick="next_page();">
 {% endif %}

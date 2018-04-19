@@ -93,8 +93,8 @@ def anime_detail(title, anime_id):
     return render_template('detail.html', rows=rows, title=title)
 
 
-@app.route('/detail/<int:anime_id>/<int:episode>')
-def show_anime(anime_id, episode):
+@app.route('/detail/<title>/<int:anime_id>/<int:episode>')
+def show_anime(title, anime_id, episode):
     sql = g.db.get_sql('select_anipath_sql')
     rows = g.db.execute(sql, anime_id, episode)
     sql = g.db.get_sql('get_episode')
