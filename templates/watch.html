@@ -39,7 +39,7 @@
 <video controls autoplay="autoplay">
     <source src="{{ ani_path }}" type="video/mp4">
     <source src="{{ ani_path }}" type="video/avi">
-    {% if vttpath %}
+    {% if vtt_path %}
         <track kind="subtitles" label="korean subtitles"
                src="{{ vtt_path }}" srclang="ko" default>
     {% endif %}
