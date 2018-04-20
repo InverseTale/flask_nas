@@ -2,6 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script>
         var link = document.location.href.split('?');
         var split_link = link[0].split("/");
@@ -22,7 +23,7 @@
             window.location = split_link;
         }
 
-         function prev_page() {
+        function prev_page() {
             var prev_episode;
 
             prev_episode = split_link.pop();
@@ -36,20 +37,23 @@
     </script>
 </head>
 <body>
-<video controls autoplay="autoplay">
-    <source src="{{ ani_path }}" type="video/mp4">
-    <source src="{{ ani_path }}" type="video/avi">
-    {% if vtt_path %}
-        <track kind="subtitles" label="korean subtitles"
-               src="{{ vtt_path }}" srclang="ko" default>
+{% include "nav.html" %}
+<div class="container">
+    <video controls autoplay="autoplay">
+        <source src="{{ ani_path }}" type="video/mp4">
+        <source src="{{ ani_path }}" type="video/avi">
+        {% if vttpath %}
+            <track kind="subtitles" label="korean subtitles"
+                   src="{{ vtt_path }}" srclang="ko" default>
+        {% endif %}
+    </video>
+    {% if next_episode-1 > 1 %}
+        <input type="button" value="이전" onClick="prev_page();">&nbsp;&nbsp;&nbsp;
     {% endif %}
-</video>
-{% if next_episode-1 > 1 %}
-<input type="button" value="이전" onClick="prev_page();">&nbsp;&nbsp;&nbsp;
-{% endif %}
-<input type="button" value="목록" onClick="detail_page();">&nbsp;&nbsp;&nbsp;
-{% if all_episode >= next_episode %}
-<input type="button" value="다음" onClick="next_page();">
-{% endif %}
+    <input type="button" value="목록" onClick="detail_page();">&nbsp;&nbsp;&nbsp;
+    {% if all_episode >= next_episode %}
+        <input type="button" value="다음" onClick="next_page();">
+    {% endif %}
+</div>
 </body>
 </html>
