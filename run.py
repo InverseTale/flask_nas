@@ -180,7 +180,7 @@ def upload():
 
                     sql = g.db.get_sql('insert_file_vtt')
                     g.db.execute(sql,
-                                 '/uploads/' + folder + '/' + new_filename,
+                                 'uploads/' + folder + '/' + new_filename,
                                  vtt_idx, get_episode)
                     g.db.commit()
 
