@@ -173,7 +173,7 @@ def upload():
                         folder,
                         new_filename
                     )
-                    change_vtt.change_vtt(insert_file_path)
+                    change_vtt(insert_file_path)
                     sql = g.db.get_sql('select_anipath_sql')
                     vtt = g.db.execute(sql, anime_idx, get_episode)
                     vtt_idx = vtt[0][1]
