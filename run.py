@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
-import subprocess
+from smi2srt import convertSMI
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request, url_for, g
 from werkzeug.utils import secure_filename
 
-import change_vtt
+from change_vtt import change_vtt
 from db import ANI_DB
 
-app = Flask(__name__, static_url_path="", static_folder="static")
+app = Flask(__name__)
 app.config.from_object('config')
 
 
@@ -155,7 +155,7 @@ def upload():
             if not os.path.exists(app.config['UPLOAD_FOLDER'] + folder):
                 os.makedirs(app.config['UPLOAD_FOLDER'] + folder)
 
-            insert_file_path = '/uploads/' + folder + '/' + filename
+            insert_file_path = 'uploads/' + folder + '/' + filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'] + folder,
                                    filename))
 
@@ -163,10 +163,7 @@ def upload():
             episode = g.db.execute(sql, anime_idx)
 
             if is_track_extenstion(filename):
-                run_subprocess = 'python smi2srt.py ' + folder + ' ' + filename
-                subprocess.call(
-                    [run_subprocess],
-                    shell=True)
+                convertSMI(filename, folder)
                 # .smi file > .vtt file
                 if '.smi' in filename:
                     filename = filename.split('.')

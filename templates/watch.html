@@ -40,11 +40,11 @@
 {% include "nav.html" %}
 <div class="container">
     <video controls autoplay="autoplay">
-        <source src="{{ ani_path }}" type="video/mp4">
-        <source src="{{ ani_path }}" type="video/avi">
+        <source src="{{ url_for('static', filename=ani_path) }}" type="video/mp4">
+        <source src="{{ url_for('static', filename=ani_path) }}" type="video/avi">
         {% if vtt_path %}
             <track kind="subtitles" label="korean subtitles"
-                   src="{{ vtt_path }}" srclang="ko" default>
+                   src="{{ url_for('static', filename=vtt_path) }}" srclang="ko" default>
         {% endif %}
     </video>
     {% if next_episode-1 > 1 %}
