@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-    {% include "nav.html" %}
+    {% include "anime/nav.html" %}
     <div class="container">
         <div class="row">
             {% for row in rows %}
@@ -21,7 +21,7 @@
                                     <div class="day">N</div>
                                 </div>
                             {% endif %}
-                            <a href="{{ url_for('anime_detail', anime_id=row[0]) }}">
+                            <a href="{{ url_for('anime.anime_detail', anime_id=row[0]) }}">
                                 <img src="images/{{ row[3] }}" height=200px/> {{ row[2] }}
                             </a>
                         </div>

@@ -5,14 +5,14 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
  	</head>
  	<body>
-      {% include "nav.html" %}
+      {% include "anime/nav.html" %}
       <div class="container">
         <div class="collection">
             <h4
 
             >{{ title }}</h4>
             {% for row in rows %}
-                <a class="collection-item" href="{{url_for('show_anime', anime_id=row[1], episode=row[2] )}}">{{ row[2] }}화</a>
+                <a class="collection-item" href="{{url_for('anime.show_anime', anime_id=row[1], episode=row[2] )}}">{{ row[2] }}화</a>
             {% endfor %}
         </div>
       </div>

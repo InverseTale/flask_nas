@@ -19,8 +19,10 @@ htmlcov
 .coverage
 .coverage.*
 *,cover
-static/uploads
-static/images
+app/static/uploads
+app/static/images
 
 venv/
 runserver.err
+
+templates/.DS_Store
