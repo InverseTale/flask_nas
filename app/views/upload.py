@@ -5,7 +5,7 @@ from app.utils.change_vtt import change_vtt
 from app.utils.smi2srt import convertSMI
 from werkzeug.utils import secure_filename
 
-bp = Blueprint('upload', __name__, url_prefix='/upload')
+bp = Blueprint('upload', __name__)
 
 
 def allowed_file(filename):
