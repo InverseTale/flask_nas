@@ -86,6 +86,7 @@ def upload():
             episode = AnimeDetail.query.filter(
                 AnimeDetail.anime_id == anime_idx).order_by(
                 desc(AnimeDetail.episode)).first()
+            print episode
 
             if is_track_extenstion(filename):
                 convertSMI(filename, folder)
@@ -109,7 +110,7 @@ def upload():
                     db.session.commit()
 
             else:
-                get_episode = episode.anime_id + 1 if episode is not None else 1
+                get_episode = episode.episode + 1 if episode is not None else 1
 
                 insert_detail = AnimeDetail(
                     anime_id=anime_idx,
