@@ -109,7 +109,7 @@ def upload():
                     db.session.commit()
 
             else:
-                get_episode = episode.id + 1 if episode is not None else 1
+                get_episode = episode.anime_id + 1 if episode is not None else 1
 
                 insert_detail = AnimeDetail(
                     anime_id=anime_idx,
