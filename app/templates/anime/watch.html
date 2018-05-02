@@ -2,57 +2,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script>
-        var link = document.location.href.split('?');
-        var split_link = link[0].split("/");
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 
-        function next_page() {
-            var next_episode;
-
-            next_episode = split_link.pop();
-            next_episode = parseInt(next_episode) + 1;
-            split_link.push(next_episode.toString());
-            split_link = split_link.join('/');
-            window.location = split_link;
-        }
-
-        function detail_page() {
-            split_link.pop();
-            split_link = split_link.join('/');
-            window.location = split_link;
-        }
-
-        function prev_page() {
-            var prev_episode;
-
-            prev_episode = split_link.pop();
-            prev_episode = parseInt(prev_episode) - 1;
-            split_link.push(prev_episode.toString());
-            split_link = split_link.join('/');
-            window.location = split_link;
-        }
-
-
-    </script>
 </head>
 <body>
 {% include "anime/nav.html" %}
 <div class="container">
     <video controls autoplay="autoplay">
-        <source src="{{ url_for('static', filename=ani_path) }}" type="video/mp4">
-        <source src="{{ url_for('static', filename=ani_path) }}" type="video/avi">
-        {% if vtt_path %}
+        <source src="{{ url_for('static', filename=current_detail.file) }}"
+                type="video/mp4">
+        <source src="{{ url_for('static', filename=current_detail.file) }}"
+                type="video/avi">
+        {% if current_detail.file_vtt %}
             <track kind="subtitles" label="korean subtitles"
-                   src="{{ url_for('static', filename=vtt_path) }}" srclang="ko" default>
+                   src="{{ url_for('static', filename=current_detail.file_vtt) }}"
+                   srclang="ko" default>
         {% endif %}
     </video>
-    {% if next_episode-1 > 1 %}
-        <input type="button" value="이전" onClick="prev_page();">&nbsp;&nbsp;&nbsp;
+    {% if current_detail.episode > 1 %}
+        <a class="waves-effect waves-light btn" href="{{ url_for('anime.show_anime', anime_id = current_detail.anime_id, episode = current_detail.episode - 1) }}"> 이전화 보기</a>
     {% endif %}
-    <input type="button" value="목록" onClick="detail_page();">&nbsp;&nbsp;&nbsp;
-    {% if all_episode >= next_episode %}
-        <input type="button" value="다음" onClick="next_page();">
+    <a class="waves-effect waves-light btn" href="{{ url_for('anime.anime_detail', anime_id = current_detail.anime_id) }}"> 목록 보기</a>
+    {% if has_next_episode %}
+        <a class="waves-effect waves-light btn" href="{{ url_for('anime.show_anime', anime_id = current_detail.anime_id, episode = current_detail.episode + 1) }}"> 다음화 보기</a>
     {% endif %}
 </div>
 </body>

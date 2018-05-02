@@ -11,23 +11,23 @@
     {% include "anime/nav.html" %}
     <div class="container">
         <div class="row">
-            {% for row in rows %}
+            {% for anime in animes %}
                 <div class="col s12 m7 l4 xl3 ">
                     <div class="post-module">
                         <!-- Thumbnail-->
                         <div class="thumbnail">
-                            {% if row[6] %}
+                            {% if anime.is_new %}
                                 <div class="date">
                                     <div class="day">N</div>
                                 </div>
                             {% endif %}
-                            <a href="{{ url_for('anime.anime_detail', anime_id=row[0]) }}">
-                                <img src="images/{{ row[3] }}" height=200px/> {{ row[2] }}
+                            <a href="{{ url_for('anime.anime_detail', anime_id=anime.id) }}">
+                                <img src="images/{{ anime.anime_image }}" height=200px/>
                             </a>
                         </div>
                         <!-- Post Content-->
                         <div class="post-content">
-                            <h3 class="title">{{ row[1] }}</h3>
+                            <h3 class="title">{{ anime.title }}</h3>
                         </div>
                     </div>
                 </div>

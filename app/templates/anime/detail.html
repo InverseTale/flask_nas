@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-	<head>
-		<meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
- 	</head>
- 	<body>
-      {% include "anime/nav.html" %}
-      <div class="container">
-        <div class="collection">
-            <h4
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+{% include "anime/nav.html" %}
+<div class="container">
+    <div class="collection">
+        <h4
 
-            >{{ title }}</h4>
-            {% for row in rows %}
-                <a class="collection-item" href="{{url_for('anime.show_anime', anime_id=row[1], episode=row[2] )}}">{{ row[2] }}화</a>
-            {% endfor %}
-        </div>
-      </div>
- 	</body>
+        >{{ title }}</h4>
+        {% for row in rows %}
+            <a class="collection-item"
+               href="{{ url_for('anime.show_anime', anime_id=row.anime_id, episode=row.episode ) }}">{{ row.episode }}화</a>
+        {% endfor %}
+    </div>
+</div>
+</body>
 </html>

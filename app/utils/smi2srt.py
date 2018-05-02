@@ -118,7 +118,7 @@ class smiItem(object):
 
 ###################################################################################################
 def convertSMI(smi_file, file_name):
-    file_path = './static/uploads/' + file_name
+    file_path = './app/static/uploads/' + file_name
     if not os.path.exists(file_path):
         sys.stderr.write('Cannot find smi file <%s>\n' % smi_file)
         return False

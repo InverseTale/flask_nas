@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
-from flask import Blueprint, render_template, request, g, current_app
+from flask import Blueprint, render_template, request, current_app
 from app.utils.change_vtt import change_vtt
 from app.utils.smi2srt import convertSMI
 from werkzeug.utils import secure_filename
+from app.exts import db
+from app.models.anime import Anime
+from app.models.anime_detail import AnimeDetail
+from sqlalchemy import desc
 
 bp = Blueprint('upload', __name__)
 
@@ -18,11 +22,17 @@ def is_track_extenstion(filename):
     return '.smi' in filename
 
 
-def create_new_anime(row, title, folder, img_name, anime_day):
+def create_new_anime(title, folder, img_name, anime_day):
     # insert db from anime
-    sql = g.db.get_sql('insert_anime_sql')
-    g.db.execute(sql, title, folder, img_name, anime_day)
-    g.db.commit()
+
+    anime = Anime(
+        title=title,
+        folder_name=folder,
+        anime_image=img_name,
+        anime_days=anime_day
+    )
+    db.session.add(anime)
+    db.session.commit()
 
 
 @bp.route('/upload')
@@ -47,20 +57,17 @@ def upload():
         img_name
     ))
 
-    sql = g.db.get_sql('select_anime_sql')
-    row = g.db.execute(sql, title)
+    insert_anime = Anime.query.filter(Anime.folder_name == folder).all()
 
     # create new anime
-    if not row:
-        create_new_anime(row, title, folder, img_name, anime_day)
+    if not insert_anime:
+        create_new_anime(title, folder, img_name, anime_day)
 
     # checking all upload files
-    for index, file in enumerate(uploaded_files):
-        sql = g.db.get_sql('select_anime_sql')
-        row = g.db.execute(sql, title)
-        g.db.commit()
+    for file in uploaded_files:
+        select_anime = Anime.query.filter(Anime.folder_name == folder).first()
 
-        anime_idx = row[0][0]
+        anime_idx = select_anime.id
 
         # check extenstions
         if file and allowed_file(file.filename):
@@ -76,11 +83,13 @@ def upload():
                 os.path.join(current_app.config['UPLOAD_FOLDER'] + folder,
                              filename))
 
-            sql = g.db.get_sql('get_episode')
-            episode = g.db.execute(sql, anime_idx)
+            episode = AnimeDetail.query.filter(
+                AnimeDetail.anime_id == anime_idx).order_by(
+                desc(AnimeDetail.episode)).first()
 
             if is_track_extenstion(filename):
                 convertSMI(filename, folder)
+
                 # .smi file > .vtt file
                 if '.smi' in filename:
                     filename = filename.split('.')
@@ -91,22 +100,25 @@ def upload():
                         new_filename
                     )
                     change_vtt(insert_file_path)
-                    sql = g.db.get_sql('select_anipath_sql')
-                    vtt = g.db.execute(sql, anime_idx, get_episode)
-                    vtt_idx = vtt[0][1]
 
-                    sql = g.db.get_sql('insert_file_vtt')
-                    g.db.execute(sql,
-                                 'uploads/' + folder + '/' + new_filename,
-                                 vtt_idx, get_episode)
-                    g.db.commit()
+                    insert_vtt = AnimeDetail.query.filter(
+                        AnimeDetail.anime_id == anime_idx,
+                        AnimeDetail.episode == get_episode).first()
+
+                    insert_vtt.file_vtt = 'uploads/' + folder + '/' + new_filename
+                    db.session.commit()
 
             else:
-                get_episode = episode[0][0] + 1 if episode[0][0] else 1
+                get_episode = episode.id + 1 if episode is not None else 1
 
-                sql = g.db.get_sql('insert_detail_sql')
-                g.db.execute(sql, anime_idx, get_episode, insert_file_path)
-                g.db.commit()
+                insert_detail = AnimeDetail(
+                    anime_id=anime_idx,
+                    episode=get_episode,
+                    file=insert_file_path
+                )
+                db.session.add(insert_detail)
+                db.session.commit()
+
 
             filenames.append(filename)
         else:

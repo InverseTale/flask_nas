@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import os
 from flask import Flask, url_for, g, render_template
 from app.views.anime import bp as anime_bp
 from app.views.upload import bp as upload_bp
-from app.utils.db import ANI_DB
-from datetime import datetime, timedelta
+from app.exts import db, migrate
+from app.models.anime import Anime
 
 
 def create_app():
@@ -11,6 +12,9 @@ def create_app():
     app.register_blueprint(anime_bp)
     app.register_blueprint(upload_bp)
     app.config.from_object('app.config')
+
+    db.init_app(app)
+    migrate.init_app(app, db)
 
     @app.context_processor
     def override_url_for():
@@ -25,26 +29,14 @@ def create_app():
                 values['q'] = int(os.stat(file_path).st_mtime)
         return url_for(endpoint, **values)
 
-    @app.before_request
-    def before_request():
-        g.db = ANI_DB()
-
-    @app.after_request
-    def after_request(response):
-        g.db.close()
-        return response
-
     @app.route('/')
     def main():
-        sql = g.db.get_sql('select_all_sql')
-        rows = g.db.execute(sql)
-        result = []
-        for row in rows:
-            now = datetime.now().replace(hour=0, minute=0, second=0)
-            row = list(row)
-            if row[5] >= now - timedelta(days=1):
-                row.append(True)
-            result.append(row)
-        return render_template('main.html', rows=result)
+        animes = Anime.query.all()
+        return render_template('main.html', animes=animes)
+
+    @app.route('/<int:anime_days>')
+    def anime_days(anime_days):
+        animes = Anime.query.filter(Anime.anime_days == anime_days).all()
+        return render_template('main.html', animes=animes)
 
     return app
