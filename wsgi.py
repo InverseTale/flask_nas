@@ -4,13 +4,13 @@ from werkzeug.wsgi import LimitedStream
 app = create_app()
 
 class StreamConsumingMiddleware(object):
-    def __init__(self, app ):
+
+    def __init__(self, app):
         self.app = app
 
     def __call__(self, environ, start_response):
         stream = LimitedStream(environ['wsgi.input'],
                                int(environ['CONTENT_LENGTH'] or 0))
-
         environ['wsgi.input'] = stream
         app_iter = self.app(environ, start_response)
         try:
@@ -20,6 +20,7 @@ class StreamConsumingMiddleware(object):
         finally:
             if hasattr(app_iter, 'close'):
                 app_iter.close()
+
 
 app.wsgi_app = StreamConsumingMiddleware(app.wsgi_app)
 
