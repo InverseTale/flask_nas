@@ -1,7 +1,7 @@
 from app import create_app
 from werkzeug.wsgi import LimitedStream
 
-# app = create_app()
+app = create_app()
 
 class StreamConsumingMiddleware(object):
     def __init__(self, app ):
