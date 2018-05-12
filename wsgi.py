@@ -21,5 +21,5 @@ class StreamConsumingMiddleware(object):
             if hasattr(app_iter, 'close'):
                 app_iter.close()
 
-app.wsgi_app = StreamConsumingMiddleware(app.wsgi_app)
+app = StreamConsumingMiddleware(app)
 
